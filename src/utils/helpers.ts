@@ -14,6 +14,7 @@ import {
 } from "../../deps.ts";
 import { Milliseconds } from "./constants/time.ts";
 import { needMessage, needReaction } from "./collectors.ts";
+import { requiredVars } from "../../configs.ts";
 
 /** This function should be used when you want to convert milliseconds to a human readable format like 1d5h. */
 export function humanizeMilliseconds(milliseconds: number) {
@@ -154,7 +155,7 @@ export async function importDirectory(path: string) {
       paths.push(
         `import "${
           Deno.mainModule.substring(
-            0,
+          0,
             Deno.mainModule.lastIndexOf("/"),
           )
         }/${
@@ -181,7 +182,7 @@ export async function fileLoader() {
   await import(
     `${
       Deno.mainModule.substring(
-        0,
+      0,
         Deno.mainModule.lastIndexOf("/"),
       )
     }/fileloader.ts#${uniqueFilePathCounter}`
@@ -331,3 +332,12 @@ export async function createEmbedsPagination(
     }
   }
 }
+
+export const checkRequiredConfigVars = () => {
+  const missingEnvVariables = requiredVars.filter((val) => !Deno.env.get(val));
+  if (missingEnvVariables.length) {
+    throw Error(
+      "Environment variables missing: " + missingEnvVariables.toString()
+    );
+  }
+};

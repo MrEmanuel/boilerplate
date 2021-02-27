@@ -1,11 +1,16 @@
 import { botCache, Intents, startBot } from "./deps.ts";
 import { configs } from "./configs.ts";
-import { fileLoader, importDirectory } from "./src/utils/helpers.ts";
+import {
+  checkRequiredConfigVars,
+  fileLoader,
+  importDirectory,
+} from "./src/utils/helpers.ts";
 import { loadLanguages } from "./src/utils/i18next.ts";
 
 console.info(
   "Beginning Bot Startup Process. This can take a little bit depending on your system. Loading now...",
 );
+checkRequiredConfigVars();
 
 // Forces deno to read all the files which will fill the commands/inhibitors cache etc.
 await Promise.all(

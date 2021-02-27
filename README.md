@@ -10,81 +10,81 @@ This repo is meant as a template which you can use to create a Discord bot very 
 
 - [Deno](https://deno.land)
 
-## Step By Step
+## Optional
+- [Docker](https://docs.docker.com)
+- [Docker Dompose](https://docs.docker.com/compose)
+- [Denon hot reloading](https://deno.land/x/denon@2.4.7)
+
+## Step By Step with Docker Compose
+
+
+1. Clone the repository
+2. Get your discord bot's token (not the application id or key) from your [Discord Developer console](https://discord.com/developers/applications).
+3. Create an `.env` file in your project's root directory and add your bot's token with the command `echo TOKEN=123123123 > .env`
+4. Install Docker Compose if you haven't already (check with `docker-compose -v`) [https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/)
+5. start your container with `docker-compose up -d` 
+
+### How to use docker-compose
+   - The flag `-d` runs the container in the background in "Detached mode". If you want to see the console output you can remove the flag or inspect your container using `docker-compose logs mybot`. 
+   - The `--build` flag forces a build. If this is left out, and nothing is
+   - You can also access your docker container's shell with the command `docker-compose exec mybot sh`  Use `ctrl - d` to quit the session, your container will still run.
+   - Inspect your `docker-compose.yml` if you want. This file tells `docker-compose` to load your `.env` and where your `Dockerfile` is located. `docker-compose` uses that buildfile to get the latest version of `deno`, set up the environment, copy files from your local project folder, set permissions and finally start the bot in the docker container.
+   - For more information, visit [https://docs.docker.com/compose/reference](https://docs.docker.com/compose/reference)
+
+
+## Step By Step using Docker (without Docker Compose)
+1. Clone the repository
+2. Get your discord bot's token (not the application id or key) from your [Discord Developer console](https://discord.com/developers/applications).
+3. Create an `.env` file in your root directory and add your bot's token with the command `echo TOKEN=123123123 > .env`
+4. Build the container, from the root of your project with the command `docker build -t mybot .`
+5. Run the container `docker run --env-file ./env -t mybot`
+
+## Step By Step Without Docker
 
 1. Create your own repo using the template button. It is next to the button where you get the url to clone. It will say `Use this template` This is a template repo.
 2. Clone your own repo that Github created for you. `git clone url-here-for-your-repo`
-3. Create your `configs.ts` file in the main folder.
-
-```ts
-// Step 1: If you do NOT use Docker, remove the `.example` from this file name so it is called `configs.ts` Docker will require this file.
-// Step 2: Add all your bot's information below. The only required one is token and prefix. NOTE: As long as `.gitignore` file is ignoring configs.ts your configurations will be kept private!
-// Step 3: Remove these comments if you like.
-
-export const configs = {
-  // Your bot token goes here
-  token: "",
-  // The default prefix for your bot. Don't worry guilds can change this later.
-  prefix: "!",
-  // This isn't required but you can add bot list api keys here.
-  botListTokens: {
-    DISCORD_BOT_ORG: "",
-    BOTS_ON_DISCORD: "",
-    DISCORD_BOT_LIST: "",
-    BOTS_FOR_DISCORD: "",
-    DISCORD_BOATS: "",
-    DISCORD_BOTS_GG: "",
-    DISCORD_BOTS_GROUP: "",
-  },
-  // This is the server id for your bot's main server where users can get help/support
-  supportServerID: "",
-  // These are channel ids that will enable some functionality
-  channelIDs: {
-    // When a translation is missing this is the channel you will be alerted in.
-    missingTranslation: "",
-    // When an error occurs, we will try and log it to this channel
-    errorChannelID: "",
-  },
-  // These are the role ids that will enable some functionality.
-  roleIDs: {
-    // If you have a patreon set up you can add the patreon vip role id here.
-    patreonVIPRoleID: "",
-  },
-  // These are the user ids that will enable some functionality.
-  userIDs: {
-    // You can delete the `as string[]` when you add atleast 1 id in them.
-    // The user ids for the support team
-    botSupporters: [] as string[],
-    // The user ids for the other devs on your team
-    botDevs: [] as string[],
-    // The user ids who have complete 100% access to your bot
-    botOwners: [] as string[],
-  },
-};
-```
-
-4. Start the bot `deno run -A --quiet mod.ts`
+3. Get your discord bot's token (not the application id or key) from your [Discord Developer console](https://discord.com/developers/applications).
+4. Create an `.env` file in your root directory and add your bot's token with the command `echo TOKEN=123123123 > .env`
+       Or add environment variables in any way you wish. As long as the deno process can access them via `Deno.env.get()`
+5. Start the bot `deno run -A --quiet mod.ts`
 
 **Note:** To run the bot with [PM2](https://github.com/Unitech/pm2): `pm2 start mod.ts --interpreter="deno" --interpreter-args="run -A --quiet -r" `
 
-## Step By Step with Docker
+## How to set up hot reloading using denon
+1. Install denon [https://deno.land/x/denon](https://deno.land/x/denon)
+2. create an `script.js` file with `denon --init` and edit it to look like this:
+```json
+{
+  "scripts": {
+    "dev": {
+      "cmd": "deno run -A mod.ts",
+      "desc": "run my mod.ts file"
+    }
+  },
+  "watcher": {
+    "interval": 500,
+    "exts": ["js", "jsx", "ts", "tsx", "json"],
+    "match": ["**/*.*"],
+    "skip": ["*/.git/*", "fileloader.ts", "*/db"],
+    "legacy": false
+  }
+}
+```
+3. Start the denon server with `denon dev`
+4. Enjoy hot reloading anytime you save a file. 🔥
+   
 
-You can also run this image with Docker.
-
-1. Clone the repository
-2. Create your `configs.ts` 
-3. Build the container, from the directory containing the repository `docker build -t mybot .`
-4. Run the container with `docker run -v $(pwd)/configs.ts:/bot/configs.ts -t mybot`
-
-**Notes:** 
-- In the previous commands `$(pwd)` and `.` can be replaced with the full path to directory
-- You can also use the `-d` argument to run the container in background
-
+## Add your bot to a discord server
+1. Visit your discord developer console [https://discord.com/developers/applications](https://discord.com/developers/applications)
+2. Click on your application, then `OAuth` in the menu
+3. Click the `bot` checkbox for scopes.
+4. Select the appropriate permissions. Admin is good for development. You can always change this later.
+   Anyone clicking the link will be asked to invite your bot to their server(s) with the specified permissions. 
 ## Features
 
 ## Beginner Developers
 
-Don't worry a lot of developers start out coding their first projects as a Discord bot(I did 😉) and it is not so easy. With Discordeno, I tried to build it in a way that solved all the headaches I had when first starting out coding bots. If you are a beginner developer, please use this boilerplate.
+Don't worry, a lot of developers start out coding their first projects as a Discord bot(I did 😉) and it is not so easy. With Discordeno, I tried to build it in a way that solved all the headaches I had when first starting out coding bots. If you are a beginner developer, please use this boilerplate.
 
 **Modular commands, arguments, events, inhibitors, monitors, tasks.**
 

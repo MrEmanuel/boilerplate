@@ -1,10 +1,20 @@
-// Step 1: Remove the `.example` from this file name so it is called `configs.ts`
-// Step 2: Add all your bot's information below. The only required one is token and prefix. NOTE: As long as `.gitignore` file is ignoring configs.ts your configurations will be kept private!
-// Step 3: Remove these comments if you like.
+// This will import all variables from any `.env` in your root directory and make them available to the deno process via `Deno.env.get("MY_VAR")`
+import "https://deno.land/x/dotenv/load.ts";
+
+// Step 1: Add all your bot's information below. The only required one is token and prefix.
+// Step 2: Create a file called `.env` in your root directory and add your token to it on the format `TOKEN=123123123123123` or `BOT_OWNERS=12121212,3434343434,454545` for a list.
+// Step 3: Add any other secret variables to the config file in the same way as in step 2.
+// Step 4: Remove these comments if you like.
+// Load variables from .env file using the dotenv package. See https://deno.land/x/dotenv
+
+// When deploying or setting up the repo on another machine, the .env file should be created manually
+// We don't want to add our .env file and its contents to git
+
+export const requiredVars = ["TOKEN"];
 
 export const configs = {
   // Your bot token goes here
-  token: "",
+  token: Deno.env.get("TOKEN") || "",
   // The default prefix for your bot. Don't worry guilds can change this later.
   prefix: "!",
   // This isn't required but you can add bot list api keys here.
@@ -39,7 +49,7 @@ export const configs = {
     botSupporters: [] as string[],
     // The user ids for the other devs on your team
     botDevs: [] as string[],
-    // The user ids who have complete 100% access to your bot
-    botOwners: [] as string[],
+    // The user ids who have complete 100% access to your bot.
+    botOwners: Deno.env.get("BOT_OWNERS")?.split(",") ?? [],
   },
 };
